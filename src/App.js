@@ -1,33 +1,72 @@
-import React, { Component } from 'react';
-//import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react'
+import './App.css'
+import StockList from './StockList.js'
 
-class App extends Component {
-
+class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      error: null,
-      isLoaded: false,
-      stock: [],
-      time: new Date().toLocaleString(),
-      stock_input: false,
-    };
+    this.state = { items: [], text: '', stock: [], time: new Date().toLocaleString() };
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
 
-  componentDidMount() {
-    this.intervalID = setInterval(
-      //interval
-      () => {this.iextrading()},
-      10 * 1000
+  render() {
+    return (
+      <div>
+        <h3>TODO</h3>
+        <StockList items={this.state.items} />
+        
+        <form onSubmit={this.handleSubmit}>
+          <label htmlFor="new-stock">
+            What needs to be done?
+          </label>
+          <input
+            id="new-stock"
+            onChange={this.handleChange}
+            value={this.state.text}
+          />
+          <button>
+            Add #{this.state.items.length + 1}
+          </button>
+        </form>
+
+        {/* <div>
+          <b>The time is {this.state.time}.</b>
+          <ul>
+            {
+              this.state.stock.map((obj, index) =>
+                // Only do this if items have no stable IDs
+                <li key={index}>
+                  <span className="stock_name">{obj.quote.symbol}</span> - <span className="stock_latest_price">{obj.quote.latestPrice}</span>
+                </li>
+              )
+            }
+          </ul>
+        </div> */}
+
+      </div>
     );
-
-    //run on load
-    this.iextrading();
   }
 
-  componentWillUnmount() {
-    clearInterval(this.intervalID);
+  handleChange(e) {
+    this.setState({ text: e.target.value });
+  }
+
+  handleSubmit(e) {
+    e.preventDefault();
+    if (!this.state.text.length) {
+      return;
+    }
+    const newItem = {
+      text: this.state.text,
+      id: Date.now()
+    };
+    this.setState(state => ({
+      items: state.items.concat(newItem),
+      text: ''
+    }));
+
+    //this.iextrading(newItem.text);
   }
 
   tick() {
@@ -36,10 +75,21 @@ class App extends Component {
     });
   }
 
-  iextrading() {
+  iextrading(new_stock) {
     this.tick();
 
-    fetch("https://api.iextrading.com/1.0/stock/market/batch?symbols=goog,tsla&types=quote")
+    var symbol_str = "";
+    var stock_list = [];
+    stock_list.push(new_stock);
+    if (this.state.items.length > 0) {
+      for (let i = 0; i < this.state.items.length; i++) {
+        stock_list.push(this.state.items[i].text);
+      }
+    }
+
+    symbol_str = stock_list.join();
+    
+    fetch("https://api.iextrading.com/1.0/stock/market/batch?symbols="+ symbol_str +"&types=quote")
     .then(res => res.json())
     .then(
       (result) => {
@@ -65,83 +115,6 @@ class App extends Component {
     )
   }
 
-  handleChangeValue = e => this.setState({stock_input: e.target.value});
-
-  submitSomething() {
-    console.log(this.state.stock_input);
-    console.log("after");
-    console.log(this.props.params.name);
-  }
-
-  // formCallback(stock_name) {
-  //   this.setState({ stock: stock_name });
-  //   console.log(this.state.stock);
-  // }
-
-  render() {
-    const { error, isLoaded, stock } = this.state;
-
-    if (error) {
-      return <div>Error: {error.message}</div>;
-    } else if (!isLoaded) {
-      return <div>Loading...</div>;
-    } else {
-      return (
-        <div>
-          <InputForm value={this.state.stock_input} onChangeValue={this.handleChangeValue} />
-          <span>{this.state.stock_input}</span>
-          <b>The time is {this.state.time}.</b>
-          <ul>
-            {
-              stock.map((obj, index) =>
-                // Only do this if items have no stable IDs
-                <li key={index}>
-                  <span className="stock_name">{obj.quote.symbol}</span> - <span className="stock_latest_price">{obj.quote.latestPrice}</span>
-                </li>
-              )
-            }
-          </ul>
-        </div>
-      );
-    }
-  }
-
 }
 
-class InputForm extends React.Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      stock_input: ''
-    };
-
-    this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }  
-
-  handleChange(event) {
-    this.setState({stock_input: event.target.value});
-  }
-
-  handleSubmit(event) {
-    console.log("submitting");
-    event.preventDefault();
-    this.setState({stock_input: event.target.value});
-  }
-
-  render() {
-    return (
-      <form onSubmit={this.handleSubmit}>
-        <label>
-        Stocks:
-        </label>
-        <input type="text" name="stock_name" value={this.props.stock_input} />
-        {/* onChange={this.props.onChangeValue} */}
-        <input type="submit" value="Submit" />
-      </form>
-    );
-  }
-}
-
-export default App;
+export default App
