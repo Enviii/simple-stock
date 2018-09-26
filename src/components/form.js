@@ -4,9 +4,9 @@ import ReactDOM from 'react-dom';
 class StockForm extends React.Component {
   render() {
     return (
-      <Form>
+      <example>
         <legend>Title</legend>
-      </Form>
+      </example>
     );
   }
 }

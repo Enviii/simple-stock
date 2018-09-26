@@ -11,7 +11,7 @@ class App extends Component {
       isLoaded: false,
       stock: [],
       time: new Date().toLocaleString(),
-      stock: false,
+      stock_input: false,
     };
   }
 
@@ -19,7 +19,7 @@ class App extends Component {
     this.intervalID = setInterval(
       //interval
       () => {this.iextrading()},
-      60 * 1000
+      10 * 1000
     );
 
     //run on load
@@ -65,13 +65,22 @@ class App extends Component {
     )
   }
 
-  formCallback(stock_name) {
-    this.setState({ stock: stock_name });
-    console.log(this.state.stock);
+  handleChangeValue = e => this.setState({stock_input: e.target.value});
+
+  submitSomething() {
+    console.log(this.state.stock_input);
+    console.log("after");
+    console.log(this.props.params.name);
   }
+
+  // formCallback(stock_name) {
+  //   this.setState({ stock: stock_name });
+  //   console.log(this.state.stock);
+  // }
 
   render() {
     const { error, isLoaded, stock } = this.state;
+
     if (error) {
       return <div>Error: {error.message}</div>;
     } else if (!isLoaded) {
@@ -79,14 +88,15 @@ class App extends Component {
     } else {
       return (
         <div>
-          <InputForm callbackFromParent={this.formCallback} />
+          <InputForm value={this.state.stock_input} onChangeValue={this.handleChangeValue} />
+          <span>{this.state.stock_input}</span>
           <b>The time is {this.state.time}.</b>
           <ul>
             {
               stock.map((obj, index) =>
                 // Only do this if items have no stable IDs
                 <li key={index}>
-                  {obj.quote.symbol} - {obj.quote.latestPrice}
+                  <span className="stock_name">{obj.quote.symbol}</span> - <span className="stock_latest_price">{obj.quote.latestPrice}</span>
                 </li>
               )
             }
@@ -103,7 +113,7 @@ class InputForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      stock: ''
+      stock_input: ''
     };
 
     this.handleChange = this.handleChange.bind(this);
@@ -111,15 +121,13 @@ class InputForm extends React.Component {
   }  
 
   handleChange(event) {
-    this.setState({stock: event.target.value});
+    this.setState({stock_input: event.target.value});
   }
 
   handleSubmit(event) {
+    console.log("submitting");
     event.preventDefault();
-  }
-
-  parentCallback() {
-    this.props.callbackFromParent(this.state.stock);
+    this.setState({stock_input: event.target.value});
   }
 
   render() {
@@ -128,12 +136,12 @@ class InputForm extends React.Component {
         <label>
         Stocks:
         </label>
-        <input type="text" value={this.state.stock} onChange={this.handleChange}/>
+        <input type="text" name="stock_name" value={this.props.stock_input} />
+        {/* onChange={this.props.onChangeValue} */}
         <input type="submit" value="Submit" />
       </form>
     );
   }
 }
-// testing
 
 export default App;

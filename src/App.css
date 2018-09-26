@@ -26,3 +26,13 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+.stock_latest_price {
+  animation: blinker 1s linear infinite;
+}
+
+/* @keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+} */
