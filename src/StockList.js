@@ -17,6 +17,7 @@ class StockList extends React.Component {
         stock_list.push(this.props.items[i].text);
       }
     }
+    
 
     symbol_str = stock_list.join();
     
@@ -25,7 +26,7 @@ class StockList extends React.Component {
     .then(
       (result) => {
         var arr = [];
-        
+
         Object.keys(result).forEach(function(key) {
           arr.push(result[key]);
         });
