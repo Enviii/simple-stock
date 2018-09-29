@@ -4,7 +4,7 @@ class StockInfo extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      items: [], 
+      symbols: [], 
       text: '', 
       stock: [], 
       time: new Date().toLocaleString() 
@@ -18,8 +18,8 @@ class StockInfo extends React.Component {
       10 * 1000
     );
 
-    //run on load
     this.getStocks();
+    console.log("mounting StockInfo")
   }
 
   componentWillUnmount() {
@@ -43,8 +43,10 @@ class StockInfo extends React.Component {
       }
     }
 
-    this.setState({items: stock_list});
+    this.setState({symbols: stock_list});
     symbol_str = stock_list.join();
+
+    console.log(symbol_str, "symbol_str");
 
     if (symbol_str.length > 0) {
       fetch("https://api.iextrading.com/1.0/stock/market/batch?symbols="+ symbol_str +"&types=quote")
@@ -85,7 +87,7 @@ class StockInfo extends React.Component {
         <ul>
           {
             this.state.stock.map((obj, index) =>
-              // Only do this if items have no stable IDs
+              // Only do this if symbols have no stable IDs
               <li key={index}>
                 <span className="stock_name">{obj.quote.symbol}</span> - <span className="stock_latest_price">{obj.quote.latestPrice}</span>
               </li>

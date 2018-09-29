@@ -8,7 +8,7 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = { 
-      items: [], 
+      symbols: [], 
       text: ''
     };
     
@@ -18,8 +18,8 @@ class App extends React.Component {
 
   render() {
     let stock_list;
-    if (this.state.items.length > 0) {
-      stock_list = <StockList items={this.state.items} />
+    if (this.state.symbols.length > 0) {
+      stock_list = <StockList symbols={this.state.symbols} />
     } else { 
       stock_list = "";
     }
@@ -37,7 +37,7 @@ class App extends React.Component {
             placeholder="AAPL"
           />
           <Button type="submit" variant="contained" color="primary">
-            Add Stock{this.state.items.length + 1}
+            Add Stock{this.state.symbols.length + 1}
           </Button>
         </form>
 
@@ -61,7 +61,7 @@ class App extends React.Component {
       id: Date.now()
     };
     this.setState(state => ({
-      items: state.items.concat(newItem),
+      symbols: state.symbols.concat(newItem),
       text: ''
     }));
   }
