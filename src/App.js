@@ -1,6 +1,5 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
-import Input from '@material-ui/core/Input';
 import TextField from '@material-ui/core/TextField';
 import './App.css'
 import StockList from './StockList.js'
@@ -8,12 +7,23 @@ import StockList from './StockList.js'
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { items: [], text: '', stock: [], time: new Date().toLocaleString() };
+    this.state = { 
+      items: [], 
+      text: ''
+    };
+    
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
   render() {
+    let stock_list;
+    if (this.state.items.length > 0) {
+      stock_list = <StockList items={this.state.items} />
+    } else { 
+      stock_list = "";
+    }
+
     return (
       <div>
         
@@ -26,20 +36,13 @@ class App extends React.Component {
             margin="normal"
             placeholder="AAPL"
           />
-          {/* <Input
-            id="new-stock"
-            onChange={this.handleChange}
-            value={this.state.text}
-            placeholder="AAPL"
-          /> */}
           <Button type="submit" variant="contained" color="primary">
-            Add #{this.state.items.length + 1}
+            Add Stock{this.state.items.length + 1}
           </Button>
         </form>
 
         <h3>Stocks</h3>
-        <StockList items={this.state.items} />
-
+        {stock_list}
       </div>
     );
   }
