@@ -1,14 +1,39 @@
-import React, { Component } from 'react'
+import React from 'react';
 
 class StockList extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { items: [], text: '', stock: [], time: new Date().toLocaleString() };
+    this.state = {
+      items: [], 
+      text: '', 
+      stock: [], 
+      time: new Date().toLocaleString() 
+    };
+  }
+
+  componentDidMount() {
+    this.intervalID = setInterval(
+      //interval
+      () => {this.getStocks()},
+      10 * 1000
+    );
+
+    //run on load
+    this.getStocks();
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.intervalID);
+  }
+
+  tick() {
+    this.setState({
+      time: new Date().toLocaleString()
+    });
   }
 
   getStocks() {
-    //this.tick();
-    console.log("getStocks");
+    this.tick();
 
     var symbol_str = "";
     var stock_list = [];
@@ -17,39 +42,41 @@ class StockList extends React.Component {
         stock_list.push(this.props.items[i].text);
       }
     }
-    
 
     symbol_str = stock_list.join();
-    
-    fetch("https://api.iextrading.com/1.0/stock/market/batch?symbols="+ symbol_str +"&types=quote")
-    .then(res => res.json())
-    .then(
-      (result) => {
-        var arr = [];
+    console.log(symbol_str, "getStocks");
 
-        Object.keys(result).forEach(function(key) {
-          arr.push(result[key]);
-        });
+    if (symbol_str.length > 0) {
+      fetch("https://api.iextrading.com/1.0/stock/market/batch?symbols="+ symbol_str +"&types=quote")
+      .then(res => res.json())
+      .then(
+        (result) => {
+          var arr = [];
 
-        this.setState({
-          isLoaded: true,
-          stock: arr
-        });
-      },
+          Object.keys(result).forEach(function(key) {
+            arr.push(result[key]);
+          });
 
-      (error) => {
-        this.setState({
-          isLoaded: true,
-          error
-        });
-      }
-    )
+          this.setState({
+            isLoaded: true,
+            stock: arr
+          });
+        },
+
+        (error) => {
+          this.setState({
+            isLoaded: true,
+            error
+          });
+        }
+      )
+    }
   }
 
   render() {
-    if (this.props.items.length != 0) {
-      this.getStocks(this.props.items);
-    }
+    // if (this.props.items.length != 0) {
+    //   this.getStocks(this.props.items);
+    // }
 
     return (
       <div>

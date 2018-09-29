@@ -1,4 +1,7 @@
-import React, { Component } from 'react'
+import React from 'react';
+import Button from '@material-ui/core/Button';
+import Input from '@material-ui/core/Input';
+import TextField from '@material-ui/core/TextField';
 import './App.css'
 import StockList from './StockList.js'
 
@@ -13,36 +16,29 @@ class App extends React.Component {
   render() {
     return (
       <div>
-        <h3>TODO</h3>
-        <StockList items={this.state.items} />
         
         <form onSubmit={this.handleSubmit}>
-          <label htmlFor="new-stock">
-            What needs to be done?
-          </label>
-          <input
+          <TextField
+            id="new-stock"
+            label="Stock Symbol"
+            onChange={this.handleChange}
+            value={this.state.text}
+            margin="normal"
+            placeholder="AAPL"
+          />
+          {/* <Input
             id="new-stock"
             onChange={this.handleChange}
             value={this.state.text}
-          />
-          <button>
+            placeholder="AAPL"
+          /> */}
+          <Button type="submit" variant="contained" color="primary">
             Add #{this.state.items.length + 1}
-          </button>
+          </Button>
         </form>
 
-        {/* <div>
-          <b>The time is {this.state.time}.</b>
-          <ul>
-            {
-              this.state.stock.map((obj, index) =>
-                // Only do this if items have no stable IDs
-                <li key={index}>
-                  <span className="stock_name">{obj.quote.symbol}</span> - <span className="stock_latest_price">{obj.quote.latestPrice}</span>
-                </li>
-              )
-            }
-          </ul>
-        </div> */}
+        <h3>Stocks</h3>
+        <StockList items={this.state.items} />
 
       </div>
     );
@@ -65,54 +61,6 @@ class App extends React.Component {
       items: state.items.concat(newItem),
       text: ''
     }));
-
-    //this.iextrading(newItem.text);
-  }
-
-  tick() {
-    this.setState({
-      time: new Date().toLocaleString()
-    });
-  }
-
-  iextrading(new_stock) {
-    this.tick();
-
-    var symbol_str = "";
-    var stock_list = [];
-    stock_list.push(new_stock);
-    if (this.state.items.length > 0) {
-      for (let i = 0; i < this.state.items.length; i++) {
-        stock_list.push(this.state.items[i].text);
-      }
-    }
-
-    symbol_str = stock_list.join();
-    
-    fetch("https://api.iextrading.com/1.0/stock/market/batch?symbols="+ symbol_str +"&types=quote")
-    .then(res => res.json())
-    .then(
-      (result) => {
-        var arr = [];
-        console.log("running api??");
-        Object.keys(result).forEach(function(key) {
-          arr.push(result[key]);
-        });
-        this.setState({
-          isLoaded: true,
-          stock: arr
-        });
-      },
-      // Note: it's important to handle errors here
-      // instead of a catch() block so that we don't swallow
-      // exceptions from actual bugs in components.
-      (error) => {
-        this.setState({
-          isLoaded: true,
-          error
-        });
-      }
-    )
   }
 
 }
